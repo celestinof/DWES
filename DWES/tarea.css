@@ -1,0 +1,33 @@
+
+
+body {
+
+    background-color: coral; /*Color de fondo general*/
+
+}
+
+header {
+text-align: center;
+border: 0px;
+padding: 0px;
+background-color: lightblue;
+
+}
+
+main {
+    font-family: Arial, sans-serif; 
+    font-size: 18px; 
+    color: black; 
+}
+
+
+.datos_agenda,
+.formulario-contacto,
+.delagenda {
+    border: 2px solid darkblue; /* Borde oscuro */
+    padding: 20px;
+    margin: 20px auto; /* Centrado y con espacio */
+    width: 90%; 
+    max-width: 600px; /* Un ancho máximo en pantallas grandes */
+    background-color: #f9f9f9;
+}
