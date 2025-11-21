@@ -135,5 +135,122 @@ if (!$conProyecto) {
 
         // Opcional: volver al modo automático después de la transacción
         $conProyecto->autocommit(true);   
+        $conProyecto->close(); //cerramos la conexion
+
+        ?>
+
+                                <!--PUNTO 3.1.4 Obtención y conjunto de resultados-->
+        <?php
+
+        //Al ejecutar consultas que devuelven datos (SELECT), obtenemos un objeto resultado (mysqli_result). Una vez ya iniciada la
+        //conexión a la base de datos, sin errores realizamos una consulta SELECT.
+               
+        $consulta1=$conProyecto->query('SELECT producto, unidades FROM stock');
+
+        //Para obtener los datos del objeto resultado, usamos alguno de los métodos de obtención de filas.
+        //Posteriormente, recorreremos el conjunto de resultados fila a fila.
+        //Existen cuatro métodos principales
+        
+        //1. fetch_array(): Devuelve una fila del conjunto de resultados como un array indexado tanto por números como por nombres de columna.
+        //El parametro opcional MYSQLI_ASSOC, MYSQLI_NUM o MYSQLI_BOTH indica el tipo de array que se devolverá. POR DEFECTO es MYSQLI_BOTH.
+        
+        //El bucle while recorre todas las filas del conjunto de resultados hasta que fetch_array() devuelve null.
+        //Es decir, hasta que no quedan más filas por procesar.
+        while ($fila=$consulta1->fetch_array()){
+            
+            echo "<p>Producto: ".$fila['producto']." - Unidades: ".$fila['unidades']."</p>";
+            //También podríamos acceder a los datos usando índices numéricos
+            //echo "<p>Producto: ".$fila[0]." - Unidades: ".$fila[1]."</p>";          
+        }
+
+        //2. fetch_assoc(): Devuelve una fila del conjunto de resultados como un array asociativo (solo por nombres de columna).
+        //Es como fetch_array(MYSQLI_ASSOC)
+        $consulta2=$conProyecto->query('SELECT producto, unidades FROM stock');
+
+        while ($fila=$consulta2->fetch_assoc()){
+            echo "<p>Producto: ".$fila['producto']." - Unidades: ".$fila['unidades']."</p>";
+        }
+
+        //3. fetch_row(): Devuelve una fila del conjunto de resultados como un array indexado numéricamente.
+        //Es como fetch_array(MYSQLI_NUM)
+        $consulta3=$conProyecto->query('SELECT producto, unidades FROM stock');
+        while ($fila=$consulta3->fetch_row()){
+            echo "<p>Producto: ".$fila[0]." - Unidades: ".$fila[1]."</p>";
+        }
+
+        //4. fetch_object(): Devuelve una fila del conjunto de resultados como un objeto.
+        //Los nombres de las columnas se convierten en propiedades del objeto.
+        $consulta4=$conProyecto->query('SELECT producto, unidades FROM stock');
+        while ($fila=$consulta4->fetch_object()){
+            echo "<p>Producto: ".$fila->producto." - Unidades: ".$fila->unidades."</p>";
+        }
+?>
+
+                                        <!--PUNTO 3.1.5 Consultas preparadas-->
+<?php
+
+        //Las consultas preparadas son útiles para ejecutar la misma consulta repetidamente con diferentes valores,
+        //y para prevenir ataques de inyección SQL al separar la lógica de la consulta de los datos y por ser
+        //procesadas más rápidamente por el servidor de bases de datos.
+
+        //La forma general de usar consultas preparadas con mysqli es utilizar la clase mysqli_stmt.
+        //1. Se obtiene el objeto mysqli_stmt llamando al método prepare() del objeto mysqli.
+
+        $stmt = $conProyecto->stmt_init(); //inicializamos el objeto mysqli_stmt
+
+        //2. Preparar la planilla SQL con marcadores de posición (placeholders)
+        $stmt->prepare('INSERT INTO familias (cod, nombre) VALUES (?, ?)');
+
+        //3. Vincular los parámetros a los marcadores de posición usando bind_param()
+        //se usa "i" para los int, "d" para los double, "s" para los string y "b" para los bools
+        //Ejemplo
+
+        //Asignamos los valores a insertar en las variables
+        $cod_producto = "TABLET";
+        $nombre_producto = "Tablet PC";
+
+        // 'ss' indica que son dos cadenas de texto (string).
+        $stmt->bind_param('ss', $cod_producto, $nombre_producto);
+
+        //¡Importante! Los argumentos de bind_param siempre deben ser variables ($cod_producto),
+        // no valores literales ("TABLET"), porque se pasan por referencia.
+
+        //4. Tras enlazar, ejecutar la consulta preparada con execute()
+        $stmt->execute();
+
+        //5. Finalmente, cerrar la declaración preparada
+        $stmt->close();
 
 
+        //PARA CONSULTAS SELECT PREPARADAS, El proceso es similar,
+        //pero después de ejecutar la consulta, se deben vincular las columnas de resultados a variables usando bind_result()
+        //y luego recuperar los resultados fila por fila usando fetch().
+
+        // 1. Inicializar el statement
+        $stmt_select = $conProyecto->stmt_init(); 
+
+        // 2. Preparar la consulta: Solo necesitamos un placeholder para las unidades
+        // Nota: La tabla es 'stocks', no 'stock' (asumiendo que ese fue el nombre usado previamente)
+        $stmt_select->prepare('SELECT producto, unidades FROM stocks WHERE unidades > ?');
+
+        // 3. Definir la variable del parámetro
+        $unidades_minimas = 10; // Usamos un nombre claro para la variable
+
+        // 4. Vincular el parámetro: 'i' (integer) y la variable $unidades_minimas
+        $stmt_select->bind_param("i", $unidades_minimas);
+
+        // 5. Ejecutar la consulta
+        $stmt_select->execute();
+
+        // 6. Vincular las columnas de resultados a variables (los nombres pueden ser distintos de las columnas)
+        //se guarda en un array asociativo de clave nombre_producto_db y cantidad_unidades_db y valores correspondientes
+        $stmt_select->bind_result($nombre_producto_db, $cantidad_unidades_db);
+
+        // 7. Recorrer los resultados con el statement correcto ($stmt_select). Fijarse que usamos fetch() a secas.
+        while($stmt_select->fetch()) {
+            // Usamos las variables enlazadas con bind_result
+            echo "<p>Producto **$nombre_producto_db**: $cantidad_unidades_db unidades.</p>";
+        }
+
+        // 8. Cerrar el statement correcto
+        $stmt_select->close();
