@@ -10,13 +10,22 @@ clase PDO.*/
 //    como el tipo de base de datos, el nombre del host, el nombre de la base de datos
 // Usaremos "mysql:host=localhost;dbname=proyecto".
 
+//El dsn es la parte más importante para establecer la conexión, ya que contiene el controlador y los parámetros necesarios.
+//Dsn significa "Data Source Name" (Nombre de Fuente de Datos) y es una cadena que especifica cómo conectarse a una base de datos específica.
 $conProyecto= new PDO("mysql:host=localhost;dbname=proyecto");
 
 //También podemos tenerlo almacenado en variables:
 
-$host="localhost";
-$dbname="proyecto";
-$conProyecto= new PDO("mysql:host=$host;dbname=$dbname");
+$conProyecto=new PDO($dsn, $user, $pass);
+//se recomienda guardar los datos(host, user...) en variables porque si estos cambian
+//solo hay que acutalizar el valor de la cariable.
+$host="locaalhost";
+$db = "proyecto";
+$user = "gestor";
+$pass = "secreto";
+$dsn = "mysql:host=$host;dbname=$db";
+
+
 
                 //Parametros opcionales del constructor PDO:
 //2. Usuario: Nombre de usuario para la conexión a la base de datos. Por defecto es una cadena vacía.
@@ -66,3 +75,149 @@ echo "Column names will be returned in uppercase.\n";
 //Asignar null a la variable que contiene el objeto PDO: 
 $conProyecto = null;
 //Esto cerrará la conexión a la base de datos de manera efectiva.
+
+
+//Ejemplo continuado de iniciar una conexión PDO, y luego cerrarla al final del script:
+$host = "localhost";
+$db = "proyecto";
+$user = "gestor";
+$pass = "secreto";
+$dsn = "mysql:host=$host;dbname=$db";
+$conProyecto=new PDO($dsn, $user, $pass);
+// Configurar el modo de error a advertencias
+$conProyecto->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+$conProyecto = null; // Cierra la conexión al final del script
+
+?>
+
+<!----------------Punto 3.2.2. Establecer consultas-------------------------->
+<?php
+//Una vez establecida la conexión a la base de datos usando PDO, 
+// el siguiente paso es realizar consultas SQL para interactuar con los datos
+//  almacenados en la base de datos.
+//  PDO proporciona varios métodos para ejecutar consultas,
+//  siendo los más comunes query() (las que devuelven un conjunto de datos)
+//  y prepare()/execute() (las que no devuelven datos).
+
+// Por ejemplo, para eliminar registros de una tabla llamada "stocks"
+$registros = $conProyecto->exec('DELETE FROM stocks WHERE unidades=0');
+echo "<p>Se han borrado $registros registros.</p>";
+
+//Si devuelve datos (como un select), se usa query(), que devuelve un objeto PDOStatement:
+$resultado = $conProyecto->query("SELECT producto, unidades FROM stock");   
+
+
+
+//Por defecto PDO trabaja en modo "autocommit", esto es, c
+// confirma de forma automática cada sentencia que ejecuta el servidor.
+//  Para trabajar con transacciones, PDO incorpora tres métodos:
+
+// 1. beginTransaction. Deshabilita el modo "autocommit" y comienza una nueva transacción, que finalizará cuando ejecutes uno de los dos métodos siguientes.
+// 2. commit. Confirma la transacción actual.
+// 3. rollback. Revierte los cambios llevados a cabo en la transacción actual.
+
+// Una vez ejecutado un commit o un rollback, se volverá al modo de confirmación automática.
+
+$ok = true;
+$conProyecto->beginTransaction();
+if(!$conProyecto->exec('DELETE …')) {
+    $ok = false;}
+if(!$conProyecto->exec('UPDATE …')) {
+    $ok = false;}
+
+if ($ok) {
+    $conProyecto->commit();} // Si todo fue bien confirma los cambios
+else {
+    $dwes->rollback();}   //  y si no, los revierte
+
+?>
+
+
+<!----------------Punto 3.2.3. Establecer consultas-------------------------->
+<?php
+//partimos de una conexión PDO ya establecida en $conProyecto
+//Para acceder a los datos devueltos por una consulta SELECT,
+//  PDO ofrece varios métodos de obtención en el objeto PDOStatement,
+//  siendo los más comunes fetch() y fetchAll().
+
+//Por defecto, fetch() devuelve cada fila como un array indexado tanto por números enteros (índices) como por nombres de columna (asociativos).
+// También puedes especificar el modo de obtención usando los siguientes parámetros:
+// PDO::FETCH_BOTH: (por defecto) Devuelve un array que combina ambos métodos anteriores.
+$conProyecto = new PDO(". . .");
+$resultado = $conProyecto->query("SELECT producto, unidades FROM stocks");
+while ($registro = $resultado->fetch()) {
+    echo "Producto ".$registro['producto'].": ".$registro['unidades']."<br />";
+}
+// PDO::FETCH_ASSOC: Devuelve un array asociativo con los nombres de las columnas como claves.
+while ($registro = $resultado->fetch(PDO::FETCH_ASSOC)) {
+   echo "Producto ".$registro['producto'].": ".$registro['unidades']."<br />";
+}
+// PDO::FETCH_NUM: Devuelve un array indexado numéricamente.
+while ($registro = $resultado->fetch(PDO::FETCH_NUM)) {
+   echo "Producto ".$registro[0].": ".$registro[1]."<br />";
+}
+
+// PDO::FETCH_OBJ: Devuelve cada fila como un objeto anónimo con las columnas como propiedades.
+while ($registro = $resultado->fetch(PDO::FETCH_OBJ)) {
+   echo "Producto ".$registro->producto.": ".$registro->unidades."<br />";
+}
+
+//PDO::FETCH_LAZY. Devuelve tanto el objeto como el array con clave dual anterior.
+while ($registro = $resultado->fetch(PDO::FETCH_LAZY)) {
+   echo "Producto ".$registro->producto.": ".$registro->unidades."<br />";
+} //Acceso dual. Sin embargo, este modo es menos eficiente y no se recomienda su uso habitual.
+
+//fetchAll(): Devuelve todas las filas del conjunto de resultados como un array.
+$resultados = $resultado->fetchAll(PDO::FETCH_ASSOC);
+foreach ($resultados as $registro) {
+   echo "Producto ".$registro['producto'].": ".$registro['unidades']."<br />";
+}
+
+//fetc_bound(): Permite enlazar columnas específicas a variables PHP.
+$resultado = $conProyecto->query("SELECT producto, unidades FROM stocks");
+$resultado->bindColumn('producto', $producto);
+$resultado->bindColumn('unidades', $unidades);
+while ($resultado->fetch(PDO::FETCH_BOUND)) {
+   echo "Producto ".$producto.": ".$unidades."<br />";
+}
+
+?>
+
+<!----------------Punto 3.2.4. Consultas Preparadas-------------------------->
+<?php
+//Al igual que con MySQLi, también utilizando PDO podemos preparar consultas parametrizadas en el servidor para ejecutarlas de forma repetida.
+//  El procedimiento es similar e incluso los métodos a ejecutar tienen prácticamente los mismos nombres.
+
+
+// Primero, se prepara la consulta con el método prepare(), que devuelve un objeto PDOStatement.
+$conProyecto = new PDO(". . .");
+$stmt = $conProyecto->prepare('INSERT INTO familia (cod, nombre) VALUES (?, ?)');
+
+//O también utilizando parámetros con nombre, precediéndolos por el símbolo de dos puntos.
+$stmt = $conProyecto->prepare('INSERT INTO familia (cod, nombre) VALUES (:cod, :nombre)');
+
+//Antes de ejecutar la consulta hay que asignar un valor a los parámetros utilizando el método bindParam de la clase PDOStatement.
+//  Si utilizas signos de interrogación para marcar los parámetros, el procedimiento es equivalente al método bindColumn que acabamos de ver.
+
+$cod_producto = "TABLET";
+$nombre_producto = "Tablet PC";
+$consulta->bindParam(1, $cod_producto);
+$consulta->bindParam(2, $nombre_producto);
+
+//Si utilizas parámetros con nombre, debes indicar ese nombre en la llamada a bindParam.
+$consulta->bindParam(":cod", $cod_producto);
+$consulta->bindParam(":nombre", $nombre_producto);
+
+//Finalmente, se ejecuta la consulta con el método execute().
+$stmt->execute();
+
+//También existe otra forma de pasar valores a los parámetros. Hay un método lazy, que funciona pasando los valores mediante un array, al método execute().
+
+
+$nombre="Monitores";
+$codigo="MONI";
+$stmt = $conProyecto->prepare('INSERT INTO familia (cod, nombre) VALUES (:cod, :nombre)');
+$stmt->execute([ ':cod'=>$codigo, ':nombre'=>$nombre]);
+
+
+?>
