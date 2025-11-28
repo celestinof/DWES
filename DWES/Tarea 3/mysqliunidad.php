@@ -78,8 +78,10 @@ if (!$conProyecto) {
             $conProyecto->close(); //cerramos la conexion
         }
 
-        //En el caso de ejecutar una sentencia SQL que sí devuelva datos (como un SELECT), éstos se devuelven en forma de un objeto resultado
-        //El argumento MYSQLI_USE_RESULT indica que queremos usar un conjunto de resultados almacenados en el servidor.
+        //En el caso de ejecutar una sentencia SQL que sí devuelva datos (como un SELECT),
+        //  éstos se devuelven en forma de un objeto mysqli_result.
+        //El argumento MYSQLI_USE_RESULT indica que queremos usar un
+        // conjunto de resultados almacenados en el servidor.
         //Si es MSQLI_STORE_RESULT, los resultados se almacenan en el cliente. (por defecto es STORE_RESULT).
         //Si es MSQLI_USE_RESULT, no se pueden ejecutar otras consultas en la misma conexión hasta que se hayan recuperado todos los resultados.
         //USE_RESULT es útil para conjuntos de resultados grandes que no caben en la memoria del cliente.

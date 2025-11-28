@@ -6,91 +6,72 @@
 clase PDO.*/
 
                 //Parámetros obligatorios del constructor PDO:
-//1. DSN (Data Source Name): Es una cadena que contiene la información necesaria para conectarse a la base de datos,
-//    como el tipo de base de datos, el nombre del host, el nombre de la base de datos
+//1. DSN (Data Source Name): Es una cadena que contiene la información necesaria para conectarse a 
+// la base de datos, como el tipo de la base de datos, el nombre del host, el nombre de la base de datos
 // Usaremos "mysql:host=localhost;dbname=proyecto".
 
-//El dsn es la parte más importante para establecer la conexión, ya que contiene el controlador y los parámetros necesarios.
-//Dsn significa "Data Source Name" (Nombre de Fuente de Datos) y es una cadena que especifica cómo conectarse a una base de datos específica.
-$conProyecto= new PDO("mysql:host=localhost;dbname=proyecto");
+//El dsn es la parte más importante para establecer la conexión,
+//  ya que contiene el controlador y los parámetros necesarios.
+//Dsn significa "Data Source Name" (Nombre de Fuente de Datos) y es una cadena que especifica 
+// cómo conectarse a una base de datos específica.
+//tipo de base de datos: mysql
+//nombre del host: localhost
+//nombre de la base de datos: proyecto
 
-//También podemos tenerlo almacenado en variables:
-
-$conProyecto=new PDO($dsn, $user, $pass);
 //se recomienda guardar los datos(host, user...) en variables porque si estos cambian
 //solo hay que acutalizar el valor de la cariable.
-$host="locaalhost";
+
+$host="localhost";
 $db = "proyecto";
+//Aquí tenemos la cadena DSN completa:
+$dsn = "mysql:host=".$host.";dbname=".$db;
+
 $user = "gestor";
 $pass = "secreto";
-$dsn = "mysql:host=$host;dbname=$db";
 
+/*
+Y muy importante para controlar los errores tendremos el atributo: ATTR_ERRMODE  con los posible valores:
+ERRMODE_SILENT: El modo por defecto, no muestra errores (
+se recomienda en entornos en producción).
 
+ERRMODE_WARNING: Además de establecer el código de error, 
+emitirá un mensaje E_WARNING, es el modo empleado para depurar o hacer pruebas para ver errores 
+sin interrumpir el flujo de la aplicación.
 
-                //Parametros opcionales del constructor PDO:
-//2. Usuario: Nombre de usuario para la conexión a la base de datos. Por defecto es una cadena vacía.
-//3. Contraseña: Contraseña para la conexión a la base de datos. Por defectoes una cadena vacía.
-//Por ejemplo, el constructor PDO quedaría así:
-
-$conProyecto= new PDO("mysql:host=localhost;dbname=proyecto","root","root");
-
-
-//ómo establecer y configurar una conexión a una base de datos usando PDO en PHP.
-// Establecimiento de Conexiones con PDOEl texto describe el proceso para conectar una aplicación PHP a una base de datos utilizando la extensión PDO (PHP Data Objects), que proporciona una interfaz ligera y consistente para acceder a bases de datos.1. La Clase PDO y sus ParámetrosPara establecer la conexión, debes crear una instancia (un objeto) de la clase PDO. El constructor de esta clase requiere tres parámetros principales, aunque solo el primero es obligatorio:ParámetroDescripciónObligatorio1. Origen de Datos (DSN)Una cadena de texto que especifica el controlador de la base de datos (ej. mysql:) y los parámetros de conexión específicos (servidor, nombre de la BD, etc.).Sí2. Nombre de usuarioEl usuario con permisos para acceder a la base de datos.No3. ContraseñaLa contraseña del usuario.No4. Opciones de conexiónUn array opcional para establecer configuraciones avanzadas de la conexión.No2.
-//  La Cadena DSN (Data Source Name)El DSN es la clave de la conexión. Su estructura es: controlador:parámetro1=valor1;parámetro2=valor2;...
-
-//Ejemplo de Código DSN más común: $dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
-//Instancia de Conexión: 
-
-$conProyecto = new PDO($dsn, $user, $pass);
-
-
-//Una vez creada la conexión (el objeto $conProyecto), puedes usar métodos para obtener información o modificar su comportamiento.
-
-//Se utilizan los métodos getAttribute() y setAttribute() para consultar y modificar el estado de la conexión.
-
-//Ejemplo de uso de getAttribute() para obtener el modo de error actual:
-$errorMode = $conProyecto->getAttribute(PDO::ATTR_ERRMODE);
-echo "Current Error Mode: " . $errorMode . "\n";
-//Esto devolverá un valor numérico que representa el modo de error actual.
-
-//Ejemplo de uso de setAttribute() para cambiar el modo de error a excepciones:
+ERRMODE_EXCEPTION: Además de establecer el código de error, 
+lanzará una PDOException que podemos capturar en un bloque try catch(). Lo veremos en el apartado 4.1.
+*/
 $conProyecto->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-echo "Error mode changed to exceptions.\n";
-//Después de ejecutar este código, cualquier error en las operaciones de la base de datos lanzará una excepción PDOException, que puedes capturar y manejar en tu aplicación.
+/*Con esto, si ocurre un error en una consulta o en la conexión,
+ se lanzará una excepción que podemos capturar y manejar adecuadamente. Esto se ve más adelante*/
 
 
-//Ejemplo PDO::ATTR_SERVER_VERSION:
-$serverVersion = $conProyecto->getAttribute(PDO::ATTR_SERVER_VERSION);
-echo "Database Server Version: " . $serverVersion . "\n";
-//Esto imprimirá la versión del servidor de la base de datos a la que estás conectado.  
-
-//Ejemplo de uso de PDO::ATTR_CASE:
-$conProyecto->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
-echo "Column names will be returned in uppercase.\n";
-//Después de ejecutar este código, cualquier consulta que realices devolverá los nombres de las columnas
 
 
-//La conexión permanece activa mientras exista el objeto PDO. Para cerrarla, es necesario destruir ese objeto, eliminando todas las referencias a él. La forma más sencilla de hacer esto es:
-//Asignar null a la variable que contiene el objeto PDO: 
-$conProyecto = null;
-//Esto cerrará la conexión a la base de datos de manera efectiva.
-
-
-//Ejemplo continuado de iniciar una conexión PDO, y luego cerrarla al final del script:
-$host = "localhost";
-$db = "proyecto";
-$user = "gestor";
-$pass = "secreto";
-$dsn = "mysql:host=$host;dbname=$db";
 $conProyecto=new PDO($dsn, $user, $pass);
-// Configurar el modo de error a advertencias
-$conProyecto->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
-$conProyecto = null; // Cierra la conexión al final del script
 
+//o también directamente sin variables:
+$conProyecto= new PDO("mysql:host=localhost;dbname=proyecto");
+
+//Si quisieras indicar al servidor MySQL que utilice codificación UTF-8 o UTF8mb4 (utf8 con soporte para "emojis" muy recomendable) para los datos que se transmitan, aunque hay más formas de hacerlo la siguiente es la más sencilla.
+$dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
+
+// Una vez establecida la conexión, puedes utilizar el método getAttribute
+//  para obtener información del estado de la conexión y
+//  setAttribute para modificar algunos parámetros que afectan a la misma.
+
+// Por ejemplo, para obtener la versión del servidor puedes hacer:
+$version = $conProyecto->getAttribute(PDO::ATTR_SERVER_VERSION);
+
+// Y si quieres por ejemplo que te devuelva todos los nombres de columnas en mayúsculas:
+$conProyecto->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+
+
+//Para cerrar la conexión, simplemente hay que destruir el objeto PDO:
+$conProyecto = null;
 ?>
 
-<!----------------Punto 3.2.2. Establecer consultas-------------------------->
+<!----------------Punto 3.2.2. Ejecutar consultas-------------------------->
 <?php
 //Una vez establecida la conexión a la base de datos usando PDO, 
 // el siguiente paso es realizar consultas SQL para interactuar con los datos
@@ -99,18 +80,23 @@ $conProyecto = null; // Cierra la conexión al final del script
 //  siendo los más comunes query() (las que devuelven un conjunto de datos)
 //  y prepare()/execute() (las que no devuelven datos).
 
-// Por ejemplo, para eliminar registros de una tabla llamada "stocks"
+// NO DEVUELVE DATOS. Por ejemplo, para eliminar registros de una tabla llamada "stocks"
 $registros = $conProyecto->exec('DELETE FROM stocks WHERE unidades=0');
 echo "<p>Se han borrado $registros registros.</p>";
+//Fijarse que a diferencia de mysqli, la consulta devuelve un valor en vez de un boolean. Por ello 
+//no es necesario comprar ni existe un "affected_rows".
 
-//Si devuelve datos (como un select), se usa query(), que devuelve un objeto PDOStatement:
+//SI DEVUELVE DATOS (como un select), se usa query(), que devuelve un objeto PDOStatement, similar a mysqli
+//que devuelve un objeto mysqli_result.
 $resultado = $conProyecto->query("SELECT producto, unidades FROM stock");   
 
 
 
-//Por defecto PDO trabaja en modo "autocommit", esto es, c
+//Por defecto PDO trabaja en modo "autocommit", esto es,
 // confirma de forma automática cada sentencia que ejecuta el servidor.
-//  Para trabajar con transacciones, PDO incorpora tres métodos:
+//  Para trabajar con transacciones, es diferente a mysqli, en el que desactivábamos el autocommit
+// antes, y lo volvíamos a activar al final. 
+// PDO incorpora tres métodos:
 
 // 1. beginTransaction. Deshabilita el modo "autocommit" y comienza una nueva transacción, que finalizará cuando ejecutes uno de los dos métodos siguientes.
 // 2. commit. Confirma la transacción actual.
@@ -120,6 +106,8 @@ $resultado = $conProyecto->query("SELECT producto, unidades FROM stock");
 
 $ok = true;
 $conProyecto->beginTransaction();
+// !conProyecto->exec(Consuta SQL); Si da valor distinto a todos menos 0, es decir, si da  0 (falso)
+//  asignamos false a $ok
 if(!$conProyecto->exec('DELETE …')) {
     $ok = false;}
 if(!$conProyecto->exec('UPDATE …')) {
@@ -133,7 +121,7 @@ else {
 ?>
 
 
-<!----------------Punto 3.2.3. Establecer consultas-------------------------->
+<!----------------Punto 3.2.3.- Obtención y utilización de conjuntos de resultados.-------------------------->
 <?php
 //partimos de una conexión PDO ya establecida en $conProyecto
 //Para acceder a los datos devueltos por una consulta SELECT,
@@ -190,6 +178,7 @@ while ($resultado->fetch(PDO::FETCH_BOUND)) {
 
 
 // Primero, se prepara la consulta con el método prepare(), que devuelve un objeto PDOStatement.
+//Sería el equivalente a mysqli_stmt_init() + mysqli_stmt_prepare(). 
 $conProyecto = new PDO(". . .");
 $stmt = $conProyecto->prepare('INSERT INTO familia (cod, nombre) VALUES (?, ?)');
 
