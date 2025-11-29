@@ -1,6 +1,23 @@
 <?php
-// PHP para conectar y obtener el listado de productos (se implementará después)
-?>
+// Primero requerimos la conexión a la base de datos
+require_once "conexion.php";
+
+//como vamos a listrar productos, creamos una array de productos vacío:
+$productos=[];
+
+try {
+//preparamos la consulta
+$consultaListado= "SELECT id, nombre FROM productos";
+//ejecutamos la consulta
+$stmt=$conexion->query($consultaListado);
+//almacenar los productos en el array de productos como un array asociativo
+$productos=$stmt->fetchAll((PDO::FETCH_ASSOC));
+} catch(PDOException $e){
+    //si hay error, mostramos mensaje
+    die( "Error al listar los productos: " . $e->getMessage());
+}?>
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,14 +34,19 @@
     </style>
 </head>
 <body>
+    <!--Agrupamos el contenido-->
     <div class="container my-5">
         
+    <!--Encabezado-->
         <h1 class="text-center text-white mb-4">Gestión de Productos</h1>
-        
+    <!--Botón que lanza crear.php para crear productos-->
         <a href="crear.php" class="btn btn-success mb-3">Crear</a>
-        
+    <!--Para que se ve bien en móviles, ya es una constante en bootstrap estos días-->
         <div class="table-responsive">
+
+    <!--Tabla que va a contener los productos -->
             <table class="table table-dark table-striped table-hover align-middle">
+                <!--Encabezado de la tabla-->
                 <thead>
                     <tr>
                         <th scope="col">Detalle</th>
@@ -33,35 +55,26 @@
                         <th scope="col" class="text-center">Acciones</th>
                     </tr>
                 </thead>
+                <!--Cuerpo de la tabla-->
                 <tbody>
-                    <?php 
-                    // Bucle para cada producto:
-                    // foreach ($productos as $producto) { 
-                    ?>
+                    <!--Bucle para cada productoforeach ($productos as $producto)-->
+                    <?php foreach ($productos as $producto): ?>
                         <tr>
                             <td><a href="detalle.php?id=[CODIGO]" class="btn btn-info btn-sm">Detalle</a></td>
                             
-                            <td>[CODIGO]</td> 
-                            <td>[NOMBRE]</td>
+                            <!--Aquí rellena los datos el bucle, a partir de los datos de la consulta-->
+                            <td><?php echo $producto['id']; ?></td>
+                            <td><?php echo $producto['nombre']; ?></td>
                             
+                            <!--Botones de actualizar y borrar-->
                             <td class="text-center">
                                 <a href="update.php?id=[CODIGO]" class="btn btn-warning btn-sm me-2">Actualizar</a>
                                 <a href="borrar.php?id=[CODIGO]" class="btn btn-danger btn-sm">Borrar</a>
                             </td>
                         </tr>
-                    <?php 
-                    // } // Fin del bucle PHP
-                    ?>
-                    <tr>
-                        <td><a href="detalle.php?id=2" class="btn btn-info btn-sm">Detalle</a></td>
-                        <td>2</td> 
-                        <td>Acer AX3950 i5-650 4GB 15TB W7HP</td>
-                        <td class="text-center">
-                            <a href="update.php?id=2" class="btn btn-warning btn-sm me-2">Actualizar</a>
-                            <a href="borrar.php?id=2" class="btn btn-danger btn-sm">Borrar</a>
-                        </td>
-                    </tr>
-                    </tbody>
+                    <!--Fin del bucle-->
+                    <?php endforeach; ?>
+                </tbody>
             </table>
         </div>
         

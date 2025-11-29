@@ -1,6 +1,57 @@
 <?php
-// PHP que obtendrá y mostrará el ID del producto (se implementará más tarde)
-// Por ahora, solo es HTML y estructura
+
+//conexión a la base de datos
+require_once 'conexion.php';
+
+// Comprobamos si el ID del producto viene en la URL ($_GET).
+if (!isset($_GET['id'])) {
+    
+    // Si NO se proporciona el ID, redirigimos a listado.php y detenemos el script.
+    header('Location: listado.php');
+    exit(); 
+}
+
+// Convertimos el ID a entero
+$producto_id = (int)$_GET['id'];
+$producto = null; // Inicializamos la variable para el resultado de la consulta.
+
+// Bloque try...catch para manejar errores de la base de datos
+try {
+    
+    //a. Consulta SQL que obtiene todos los datos del producto y el nombre de la familia 
+    $sql= "SELECT productos.*, familias.nombre AS nombre_familia 
+    FROM productos 
+    JOIN familias ON productos.familia = familias.cod
+    WHERE productos.id = ?";
+
+    // b. Preparamos la sentencia (Consulta Preparada)
+    $stmt = $conexion->prepare($sql);
+
+    // c. Vinculamos el parámetro ID con la variable $producto_id
+    $stmt->bindParam(1, $producto_id);
+
+    // d. Ejecutamos la consulta
+    $stmt->execute();
+    
+    // e. Obtenemos UNA SOLA fila de resultado
+    $producto = $stmt->fetch();
+
+    // 5. Comprobamos si el ID existe en la BBDD
+    if (!$producto) {
+        // Si el ID existe en la URL pero no en la tabla, redirigimos
+        header('Location: listado.php');
+        exit(); 
+    }
+
+} catch (PDOException $e) {
+    
+    // f. Si hay un error de BBDD al ejecutar la consulta, detenemos la ejecución
+    die("Error al obtener los detalles del producto: " . $e->getMessage());
+}
+
+?>
+
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -18,41 +69,44 @@
     </style>
 </head>
 <body>
+    <!--Agrupamos el contenido-->
     <div class="container my-5">
-        
-        <h1 class="text-center text-white mb-4">Detalle Producto</h1>
-
-        <div class="card p-4 mx-auto" style="max-width: 700px; background-color: #5abcb9; color: white; border: none;">
+        <!--Encabezado-->
+        <h1 class="text-center mb-4">Detalle del Producto: <?php echo $producto['nombre']; ?></h1>
+        <!--Cuadro con los detalles del producto-->
+        <div class="card shadow-lg mx-auto" style="max-width: 600px;">
             
-            <div class="d-flex justify-content-between mb-4">
-                <h3 class="card-title text-uppercase">[NOMBRE DEL PRODUCTO]</h3>
-                <h4 class="card-title">Código: [CÓDIGO]</h4>
-            </div>
-
-            <hr class="text-white">
-
-            <div class="row">
+            <!--Cuerpo del cuadro-->
+           <div class="card-body">
                 
-                <div class="col-12 col-lg-6">
-                    <p><strong>Nombre:</strong> <span class="text-white-75">[NOMBRE DEL PRODUCTO]</span></p>
-                    <p><strong>Nombre Corto:</strong> <span class="text-white-75">[NOMBRE CORTO]</span></p>
-                    <p><strong>Código:</strong> <span class="text-white-75">[CÓDIGO]</span></p>
-                    <p><strong>PVP (€):</strong> <span class="text-white-75">[PVP]</span></p>
-                    <p><strong>Código Familia:</strong> <span class="text-white-75">[CÓDIGO FAMILIA]</span></p>
-                </div>
-                
-                <div class="col-12 mt-3">
-                    <p><strong>Descripción:</strong></p>
-                    <div class="p-3 rounded text-white-75" style="border: 1px solid rgba(255, 255, 255, 0.5);">
-                        [DESCRIPCIÓN COMPLETA DEL PRODUCTO]
-                    </div>
-                </div>
+                <ul class="list-group list-group-flush">
+                    
+                    <li class="list-group-item"><strong>ID (Código):</strong> <?php echo $producto['id']; ?></li>
+                    
+                    <li class="list-group-item"><strong>Nombre Completo:</strong> <?php echo $producto['nombre']; ?></li>
+                    
+                    <li class="list-group-item"><strong>Nombre Corto:</strong> <?php echo $producto['nombre_corto']; ?></li>
+                    
+                    <li class="list-group-item">
+                        <strong>Precio (PVP):</strong> 
+                        <?php echo number_format($producto['pvp'], 2, ',', '.') . ' €'; ?>
+                    </li>
+                    
+                    <li class="list-group-item"><strong>Familia:</strong> <?php echo $producto['nombre_familia']; ?></li>
+                    
+                    <li class="list-group-item">
+                        <strong>Descripción:</strong> 
+                        <p class="mt-2 text-muted"><?php echo $producto['descripcion']; ?></p>
+                    </li>
+                    
+                </ul>
             </div>
             
-            <div class="text-center mt-5">
-                <a href="listado.php" class="btn btn-secondary btn-lg">Volver</a>
-            </div>
+            </div> <div class="text-center mt-4">
+            <a href="listado.php" class="btn btn-secondary me-2">Volver al Listado</a>
+            
+            <a href="update.php?id=<?php echo $producto['id']; ?>" class="btn btn-warning">Editar Producto</a>
+        </div>
 
-        </div> </div>
-</body>
+    </div> </body>
 </html>
