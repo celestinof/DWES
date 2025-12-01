@@ -2,7 +2,7 @@
 // Primero requerimos la conexión a la base de datos
 require_once "conexion.php";
 
-//como vamos a listrar productos, creamos una array de productos vacío:
+//como vamos a listar productos, creamos una array de productos vacío:
 $productos=[];
 
 try {
@@ -34,18 +34,23 @@ $productos=$stmt->fetchAll((PDO::FETCH_ASSOC));
     </style>
 </head>
 <body>
-    <!--Agrupamos el contenido-->
-    <div class="container my-5">
+    <!--Agrupamos el contenido. Doy una clase al contenedor por costumbre, y luego otras dos clases para bootstrap
+    Tres (3) clases diferentes aplicadas a ese elemento div
+    contenedor_listado: clase propia para lógica propia
+    container: clase de bootstrap para centrar y dar márgenes automáticos
+    my-5: clase de bootstrap para margen vertical
+    -->
+    <div class="contenedor_listado container my-5">
         
-    <!--Encabezado-->
-        <h1 class="text-center text-white mb-4">Gestión de Productos</h1>
+    <!--Encabezado. Yo le doy clase encabezado, aunque use bootstrap por costumbre. -->
+        <h1 class="encabezado text-center text-white mb-4">Gestión de Productos</h1>
     <!--Botón que lanza crear.php para crear productos-->
-        <a href="crear.php" class="btn btn-success mb-3">Crear</a>
+        <a href="crear.php" class="boton_crear btn btn-success mb-3">Crear</a>
     <!--Para que se ve bien en móviles, ya es una constante en bootstrap estos días-->
         <div class="table-responsive">
 
     <!--Tabla que va a contener los productos -->
-            <table class="table table-dark table-striped table-hover align-middle">
+            <table class="tabla_productos table table-dark table-striped table-hover align-middle">
                 <!--Encabezado de la tabla-->
                 <thead>
                     <tr>
@@ -60,7 +65,8 @@ $productos=$stmt->fetchAll((PDO::FETCH_ASSOC));
                     <!--Bucle para cada productoforeach ($productos as $producto)-->
                     <?php foreach ($productos as $producto): ?>
                         <tr>
-                            <td><a href="detalle.php?id=[CODIGO]" class="btn btn-info btn-sm">Detalle</a></td>
+                            
+                            <td><a href="detalle.php?id=<?php echo $producto['id']?>" class="btn btn-info btn-sm">Detalle</a></td>
                             
                             <!--Aquí rellena los datos el bucle, a partir de los datos de la consulta-->
                             <td><?php echo $producto['id']; ?></td>
@@ -68,9 +74,8 @@ $productos=$stmt->fetchAll((PDO::FETCH_ASSOC));
                             
                             <!--Botones de actualizar y borrar-->
                             <td class="text-center">
-                                <a href="update.php?id=[CODIGO]" class="btn btn-warning btn-sm me-2">Actualizar</a>
-                                <a href="borrar.php?id=[CODIGO]" class="btn btn-danger btn-sm">Borrar</a>
-                            </td>
+                            <a href="update.php?id=<?php echo $producto['id']; ?>" class="btn btn-warning btn-sm me-2">Actualizar</a>
+                            <a href="borrar.php?id=<?php echo $producto['id']; ?>" class="btn btn-danger btn-sm">Borrar</a>                            </td>
                         </tr>
                     <!--Fin del bucle-->
                     <?php endforeach; ?>

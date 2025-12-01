@@ -72,8 +72,7 @@ try {
     <!--Agrupamos el contenido-->
     <div class="container my-5">
         <!--Encabezado-->
-        <h1 class="text-center mb-4">Detalle del Producto: <?php echo $producto['nombre']; ?></h1>
-        <!--Cuadro con los detalles del producto-->
+<h1 class="text-center mb-4">Detalle del Producto: <?php echo htmlspecialchars($producto['nombre']); ?></h1>        <!--Cuadro con los detalles del producto-->
         <div class="card shadow-lg mx-auto" style="max-width: 600px;">
             
             <!--Cuerpo del cuadro-->
@@ -81,13 +80,10 @@ try {
                 
                 <ul class="list-group list-group-flush">
                     
-                    <li class="list-group-item"><strong>ID (Código):</strong> <?php echo $producto['id']; ?></li>
-                    
-                    <li class="list-group-item"><strong>Nombre Completo:</strong> <?php echo $producto['nombre']; ?></li>
-                    
-                    <li class="list-group-item"><strong>Nombre Corto:</strong> <?php echo $producto['nombre_corto']; ?></li>
-                    
-                    <li class="list-group-item">
+                    <li class="list-group-item"><strong>ID (Código):</strong> <?php echo htmlspecialchars($producto['id']); ?></li>
+                    <li class="list-group-item"><strong>Nombre Completo:</strong> <?php echo htmlspecialchars($producto['nombre']); ?></li>
+                    <li class="list-group-item"><strong>Nombre Corto:</strong> <?php echo htmlspecialchars($producto['nombre_corto']); ?></li>
+                    <li class="list-group-item"><strong>Familia:</strong> <?php echo htmlspecialchars($producto['nombre_familia']); ?></li>
                         <strong>Precio (PVP):</strong> 
                         <?php echo number_format($producto['pvp'], 2, ',', '.') . ' €'; ?>
                     </li>
@@ -96,8 +92,7 @@ try {
                     
                     <li class="list-group-item">
                         <strong>Descripción:</strong> 
-                        <p class="mt-2 text-muted"><?php echo $producto['descripcion']; ?></p>
-                    </li>
+                        <p class="mt-2 text-muted"><?php echo htmlspecialchars($producto['descripcion']); ?></p>                    </li>
                     
                 </ul>
             </div>

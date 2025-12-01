@@ -7,7 +7,6 @@ define("HOST", "localhost");
 define("NOMBRE_DB", "proyecto");
 define("USER", "root");
 define("PASS", "");
-
 //Creamos la cadena DSN que usaremos en la conexion
 define("DSN","mysql:host=".HOST.";dbname=".NOMBRE_DB.";charset=utf8mb4");
 
@@ -18,7 +17,6 @@ $configuracion_pdo=[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
 
 //Conectamos a la base de datos.
 try {
-
     //Intenta la conexión:
     $conexion= new PDO (DSN, USER, PASS,$configuracion_pdo);
 

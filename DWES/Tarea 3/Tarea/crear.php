@@ -7,24 +7,20 @@ require_once 'conexion.php';
 //Creamos variables de control para errores y otros mensajes varios.
 $mensaje_error=null;
 $mensaje_exito=null;
-$mensaje_generico=null;
 
 
-
-// =======================================================================
-// A. LÓGICA DE PROCESAMIENTO DEL FORMULARIO (CREATE)
-// =======================================================================
-
+// A. FORMULARIO CREAR PRODUCTO
 // Comprobamos si el formulario fue enviado (si se pulsó el botón 'crear')
 if (isset($_POST['crear'])) {
 
+    //Almacenamos los datos enviados por el formulario en variables
     $nombre=($_POST["nombre"]);
     $nombrecorto=($_POST["nombrecorto"]);
     $precio=($_POST["precio"]);
     $familia=($_POST["familia"]);
     $descripcion=($_POST["descripcion"]);
 
-
+//comprobamos que los campos obligatorios no estén vacíos
 if(empty($nombre) || empty($nombrecorto) || empty($familia)){
 
     $mensaje_error="Debe rellenar todos los campos obligatorios.";
@@ -32,18 +28,18 @@ if(empty($nombre) || empty($nombrecorto) || empty($familia)){
     $mensaje_error="El precio no puede ser negativo";
 } else{
 
-        // 3. Inserción Segura en la Base de Datos con Consultas Preparadas
+    // Usamos consulta preparada para insertar el nuevo producto de forma segura
         try {
-            // Utilizamos marcadores de posición inventados
+            // Utilizamos marcadores de posición inventados para preparar la consulta
             $consultaInsercion = "INSERT INTO productos (nombre, nombre_corto, pvp, descripcion, familia) 
                     VALUES (:nom, :nom_c, :pvp, :descu, :fam)";
 
             // Preparamos la sentencia
-            $stmt = $conexion->prepare($$consultaInsercion);
+            $stmt = $conexion->prepare($consultaInsercion);
 
             // Vinculamos los parámetros a los datos recogidos del POST
             $stmt->bindParam(":nom", $nombre);
-            $stmt->bindParam(":nom_c", $nombreCorto);
+            $stmt->bindParam(":nom_c", $nombrecorto);
             $stmt->bindParam(":pvp", $precio);
             $stmt->bindParam(":descu", $descripcion);
             $stmt->bindParam(":fam", $familia);
@@ -51,6 +47,8 @@ if(empty($nombre) || empty($nombrecorto) || empty($familia)){
             // Ejecutamos la consulta
             $stmt->execute();
             $mensaje_exito="Producto creado con éxito.";
+            //tras la creación, redirigimos al listado de productos
+            header('Location: listado.php');
             exit();
 
         } catch (PDOException $e) {     
@@ -62,9 +60,7 @@ if(empty($nombre) || empty($nombrecorto) || empty($familia)){
 
 }
 
-// =======================================================================
 // B. Obtener las familias para el select
-// =======================================================================
 $familias = []; //
 
 try {
@@ -117,7 +113,14 @@ try {
             <div class="col-md-6">
                 <label for="familia" class="form-label">Familia</label>
                 <select name="familia" id="familia" class="form-select" required>
+                    <!-- Opción por defecto -->
                     <option value="">Selecciona una familia...</option>
+                    <!-- Bucle para generar las opciones del select -->
+                    <?php foreach ($familias as $familia): ?>
+                        <option value="<?php echo $familia['cod']; ?>">
+                            <?php echo htmlspecialchars($familia['nombre']); ?>
+                        </option>
+                        <?php endforeach; ?>
                     </select>
             </div>
 
