@@ -4,9 +4,7 @@ require_once 'conexion.php';
 $mensaje = null;
 $producto_a_borrar = null; // Para mostrar el nombre en la confirmación
 
-// =======================================================================
-// A. Validación del ID y Obtención del Producto
-// =======================================================================
+// Validación del ID y Obtención del Producto
 
 if (!isset($_GET['id'])) {
     header('Location: listado.php');
@@ -30,10 +28,10 @@ try {
     die("Error al buscar el producto para confirmar: " . $e->getMessage());
 }
 
-// =======================================================================
-// B. Lógica de Ejecución del DELETE (Si el formulario ha sido enviado)
+//
+// Lógica de Ejecución del DELETE (Si el formulario ha sido enviado)
 // Usamos $_POST para saber que el usuario confirmó el borrado.
-// =======================================================================
+//
 if (isset($_POST['confirmar_borrado']) && $producto_a_borrar) {
 
     try {
@@ -75,7 +73,7 @@ if (isset($_POST['confirmar_borrado']) && $producto_a_borrar) {
             </div>
         <?php elseif ($producto_a_borrar): ?>
             <div class="alert alert-danger d-inline-block shadow-sm p-4">
-                <h2>⚠️ Advertencia de Borrado</h2>
+                <h2> Advertencia de Borrado</h2>
                 <p class="lead">¿Está seguro de que desea **BORRAR** el producto:</p>
                 <p class="fs-4">"<?php echo $producto_a_borrar['nombre']; ?>" (ID #<?php echo $producto_id; ?>)</p>
                 

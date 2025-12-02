@@ -8,9 +8,7 @@ require_once 'conexion.php';
 $mensaje_error = null;
 $mensaje_exito = null;
 
-// =======================================================================
 // A. Obtener el ID del producto y validar
-// =======================================================================
 
 // Comprobamos si el ID del producto viene en la URL ($_GET)
 if (!isset($_GET['id'])) {
@@ -24,9 +22,7 @@ if (!isset($_GET['id'])) {
 $producto_id = (int)$_GET['id'];
 
 
-// =======================================================================
 // B. Obtener las familias para el select (igual que en crear.php)
-// =======================================================================
 $familias = [];
 
 try {
@@ -38,9 +34,8 @@ try {
     die("Error crítico al obtener las familias: " . $e->getMessage());
 }
 
-// =======================================================================
+
 // C. Obtener los datos actuales del producto (PARA RELLENAR EL FORMULARIO)
-// =======================================================================
 $producto_actual = null;
 
 try {
@@ -68,10 +63,7 @@ try {
 
 // ... Continuación del bloque PHP anterior ...
 
-// =======================================================================
 // D. Lógica de procesamiento del formulario (UPDATE)
-// =======================================================================
-
 // Comprobamos si el formulario fue enviado (si se pulsó el botón 'actualizar')
 if (isset($_POST['actualizar'])) {
 
@@ -156,14 +148,12 @@ if (isset($_POST['actualizar'])) {
             
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" 
-                       value="<?php echo htmlspecialchars($producto_actual['nombre']); ?>" required>
+                <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo htmlspecialchars($producto_actual['nombre']); ?>" required>
             </div>
             
             <div class="mb-3">
                 <label for="nombrecorto" class="form-label">Nombre Corto</label>
-                <input type="text" class="form-control" id="nombrecorto" name="nombrecorto" 
-                       value="<?php echo htmlspecialchars($producto_actual['nombre_corto']); ?>" required>
+                <input type="text" class="form-control" id="nombrecorto" name="nombrecorto" value="<?php echo htmlspecialchars($producto_actual['nombre_corto']); ?>" required>
             </div>
             
             <div class="mb-3">
@@ -175,6 +165,7 @@ if (isset($_POST['actualizar'])) {
             <div class="mb-3">
                 <label for="familia" class="form-label">Familia</label>
                 <select class="form-select" id="familia" name="familia" required>
+                    <option value="">Selecciona una familia...</option>
                     <?php foreach ($familias as $familia_item): ?>
                         <option value="<?php echo $familia_item['cod']; ?>"
                             <?php 

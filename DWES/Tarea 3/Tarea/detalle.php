@@ -72,30 +72,43 @@ try {
     <!--Agrupamos el contenido-->
     <div class="container my-5">
         <!--Encabezado-->
-<h1 class="text-center mb-4">Detalle del Producto: <?php echo htmlspecialchars($producto['nombre']); ?></h1>        <!--Cuadro con los detalles del producto-->
-        <div class="card shadow-lg mx-auto" style="max-width: 600px;">
+        <h1 class="text-center mb-4">Detalle del Producto: <?= htmlspecialchars($producto['nombre']); ?></h1>        
+            <div class="card shadow-lg mx-auto" style="max-width: 600px;">
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
             
-            <!--Cuerpo del cuadro-->
-           <div class="card-body">
-                
-                <ul class="list-group list-group-flush">
-                    
-                    <li class="list-group-item"><strong>ID (Código):</strong> <?php echo htmlspecialchars($producto['id']); ?></li>
-                    <li class="list-group-item"><strong>Nombre Completo:</strong> <?php echo htmlspecialchars($producto['nombre']); ?></li>
-                    <li class="list-group-item"><strong>Nombre Corto:</strong> <?php echo htmlspecialchars($producto['nombre_corto']); ?></li>
-                    <li class="list-group-item"><strong>Familia:</strong> <?php echo htmlspecialchars($producto['nombre_familia']); ?></li>
-                        <strong>Precio (PVP):</strong> 
-                        <?php echo number_format($producto['pvp'], 2, ',', '.') . ' €'; ?>
-                    </li>
-                    
-                    <li class="list-group-item"><strong>Familia:</strong> <?php echo $producto['nombre_familia']; ?></li>
-                    
-                    <li class="list-group-item">
-                        <strong>Descripción:</strong> 
-                        <p class="mt-2 text-muted"><?php echo htmlspecialchars($producto['descripcion']); ?></p>                    </li>
-                    
-                </ul>
-            </div>
+            <li class="list-group-item">
+                <strong>ID (Código):</strong> <?= htmlspecialchars($producto['id']); ?>
+            </li>
+            
+            <li class="list-group-item">
+                <strong>Nombre Completo:</strong> <?= htmlspecialchars($producto['nombre']); ?>
+            </li>
+            
+            <li class="list-group-item">
+                <strong>Nombre Corto:</strong> <?= htmlspecialchars($producto['nombre_corto']); ?>
+            </li>
+            
+            <li class="list-group-item">
+                <strong>Familia:</strong> <?= htmlspecialchars($producto['nombre_familia']); ?>
+            </li>
+            
+            <li class="list-group-item">
+                <strong>Precio (PVP):</strong> 
+                <?= number_format($producto['pvp'], 2, ',', '.') . ' €';
+                // Dos decimales,
+                // Coma para separar los decimales
+                // Punto para los miles?>
+            </li>
+            
+            <li class="list-group-item">
+                <strong>Descripción:</strong> 
+                <p class="mt-2 text-muted"><?= htmlspecialchars($producto['descripcion']); ?></p>
+            </li>
+            
+        </ul>
+    </div>
+</div>
             
             </div> <div class="text-center mt-4">
             <a href="listado.php" class="btn btn-secondary me-2">Volver al Listado</a>
