@@ -158,8 +158,7 @@ if (isset($_POST['actualizar'])) {
             
             <div class="mb-3">
                 <label for="precio" class="form-label">PVP (€)</label>
-                <input type="number" step="0.01" class="form-control" id="precio" name="precio" 
-                       value="<?php echo $producto_actual['pvp']; ?>" required>
+                <input type="number" step="0.01" class="form-control" id="precio" name="precio" value="<?php echo $producto_actual['pvp']; ?>" required>
             </div>
 
             <div class="mb-3">
