@@ -1,11 +1,9 @@
 <?php
-
 /**Con la funcion "session_start()" preparamos nuestra página para poder llamar a la variable superglobal $_SESSION
  *  y mantener la persistencia de datos durante la sesion (en un archivo temporal que se pierde al cerrar el navegador)*/
 session_start(); 
-
     //VARIABLES: 
-     
+    
 
     //1. INICIO
     //La agenda persistente en $_SESSION. Utilizamos la etiqueta "agenda" para acceder a los elementos de agenda en el array $_SESSION
@@ -64,7 +62,8 @@ session_start();
     else {
             if (empty($telefono))
             //Si el teléfono está vacío, 3.1.2.3.
-                {unset($agenda[$nombre]);} 
+                {
+                    unset($agenda[$nombre]);} 
              
              //Como el teléfono también existe, acabamos en 3.1.2.2.
              else {
