@@ -40,9 +40,8 @@ if($zona_horaria_actual
     $zona_horaria_actual=$_SESSION["zona_horaria"];} else {
     $zona_horaria_actual='GMT';        
     }
-
-
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -60,7 +59,6 @@ if($zona_horaria_actual
         <?php if ($mensaje_preferencias): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <strong>¡Éxito!</strong> <?php echo $mensaje_preferencias; ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php endif; ?>
 
@@ -73,7 +71,7 @@ if($zona_horaria_actual
                 <div class="row mb-4">
                     <!--Usamos la palabra de HTML reservada selected en los desplegables de option
                     para lograr que lo que se ve en el navegador (lo seleccionado), sea lo que se envía
-                    como dato persistente a $_SESSION -->    
+                    como dato persistente a $_SESSION y no lo que se carga con la web-->    
 
                     <div class="col-md-4">
                         <label for="idioma" class="form-label">Idioma</label>
