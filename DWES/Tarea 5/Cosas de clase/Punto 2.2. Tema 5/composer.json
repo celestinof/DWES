@@ -1,0 +1,21 @@
+{
+    "name": "celes/celes",
+    "description": "Proyecto del punto 2.2. del tema 5",
+    "type": "project",
+    "config": {
+        "optimize-autoloader": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Clases\\": "src"
+        },
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Celestinof",
+            "email": "celestinofernandoit@gmail.com"
+        }
+    ],
+    "require": {}
+}
+}

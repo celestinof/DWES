@@ -1,0 +1,29 @@
+{
+    "name": "celes/tarea_5",
+    "description": "tarea 5",
+    "type": "project",
+    "require": {
+        "philo/laravel-blade": "3.1",
+        "fzaninotto/faker": "^1.5",
+        "windwalker/edge": "^4.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Clases\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Celestinof",
+            "email": "celestinofernandoit@gmail.com"
+        }
+    ],
+    "config": {
+        "audit": {
+            "block-insecure": false
+        },
+        "allow-plugins": {
+            "kylekatarnls/update-helper": true
+        }
+    }
+}
