@@ -1,0 +1,13 @@
+{
+    "name": "dwes/tarea6",
+    "autoload": {
+        "psr-4": {
+            "Clases\\": "src/",
+            "Clases1\\": "src/Clases1/"            
+        }
+    },
+    "require": {
+        "php2wsdl/php2wsdl": "^0.7.0",
+        "wsdl2phpgenerator/wsdl2phpgenerator": "^3.4"
+    }
+}
