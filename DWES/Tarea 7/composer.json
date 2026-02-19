@@ -1,0 +1,15 @@
+{
+    "require": {
+        "jaxon-php/jaxon-core": "^5.7"
+    },
+
+
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+
+
+}
+
