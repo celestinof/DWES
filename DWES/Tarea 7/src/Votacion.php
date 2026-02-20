@@ -1,105 +1,68 @@
 <?php
 namespace App;
 
-use Jaxon\Response\Response;
+// Añadimos el extends para que $this->response funcione correctamente
+class Votacion extends \Jaxon\App\CallableClass {
 
-class Votacion {
-
-    public function pintarProductos() {
-        $res = new Response();
-        $con = Conexion::getConexion();
-        // Obtenemos los productos para llenar la tabla [cite: 24]
-        $productos = $con->query("SELECT id, nombre, nombre_corto FROM productos")->fetchAll();
-
-        $html = "<table>
-                    <tr>
-                        <th>Código</th>
-                        <th>Nombre</th>
-                        <th>Valoración</th>
-                        <th>Valorar</th>
-                    </tr>";
-
-        foreach ($productos as $p) {
-            $id = $p['id'];
-            // Llamamos al método obligatorio del enunciado 
-            $infoVotacion = $this->pintarEstrellas($id);
+    public function miVoto($cantidad, $idPr, $idUs) {
+        $resp = $this->response;
+        $voto = new Voto();           
+        
+        // 1. Comprobamos si el usuario YA ha votado este producto [cite: 8]
+        if (!$voto->isValido($idPr, $idUs)) {
+            // Si ya ha votado, solo mostramos la alerta 
+            $resp->alert("¡Ya has votado ese producto!"); 
+        } 
+        else {
+            // 2. Si es la primera vez, insertamos el voto [cite: 10]
+            $voto->insertarVoto($cantidad, $idPr, $idUs);
             
-            $html .= "<tr>
-                <td>{$p['nombre_corto']}</td>
-                <td>{$p['nombre']}</td>
-                <td id='val-$id'>$infoVotacion</td>
-                <td>
-                    <select id='sel-$id'>
-                        <option value='1'>1</option>
-                        <option value='2'>2</option>
-                        <option value='3'>3</option>
-                        <option value='4'>4</option>
-                        <option value='5'>5</option>
-                    </select>
-                    <button onclick=\"jaxon_Votacion.miVoto($id, document.getElementById('sel-$id').value)\">Votar</button>
-                </td>
-            </tr>";
+            // 3. Actualizamos la interfaz en tiempo real sin recargar 
+            // Llamamos a pintarEstrellas para que el cambio sea inmediato
+            $this->pintarEstrellas();
+            $resp->alert("Voto registrado con éxito.");
         }
-        $html .= "</table>";
         
-        $res->assign('contenido', 'innerHTML', $html);
-        return $res;
+        return $resp;
     }
 
-    // Método obligatorio: miVoto [cite: 10]
-    public function miVoto($idProducto, $puntuacion) {
-        $res = new Response();
-        if (session_status() === PHP_SESSION_NONE) session_start();
-        $usuario = $_SESSION['usuario'];
-        $con = Conexion::getConexion();
-
-        // Comprobamos si ya ha valorado [cite: 8, 12]
-        $check = $con->prepare("SELECT id FROM votos WHERE id_p = :p AND id_u = :u");
-        $check->execute(['p' => $idProducto, 'u' => $usuario]);
+    public function pintarEstrellas() {
+        // Usamos la respuesta de la clase
+        $resp = $this->response;
         
-        if ($check->fetch()) {
-            $res->alert("Ya has valorado este producto.");
-            return $res;
-        }
-
-        // Insertamos el voto [cite: 10]
-        $ins = $con->prepare("INSERT INTO votos (id_p, id_u, puntuacion) VALUES (:p, :u, :v)");
-        $ins->execute(['p' => $idProducto, 'u' => $usuario, 'v' => $puntuacion]);
-
-        // Actualizamos solo la celda de valoración en tiempo real [cite: 9]
-        $nuevoHtml = $this->pintarEstrellas($idProducto);
-        $res->assign("val-$idProducto", "innerHTML", $nuevoHtml);
+        $voto = new Voto();
+        $resultado = $voto->pintarEstrellas(); // Debe devolver mediaVotos y numVotos [cite: 13, 19]
         
-        return $res;
-    }
-
-    // Método obligatorio: pintarEstrellas 
-    public function pintarEstrellas($idProducto) {
-        $con = Conexion::getConexion();
-        $stmt = $con->prepare("SELECT COUNT(*) as total, AVG(puntuacion) as media FROM votos WHERE id_p = :p");
-        $stmt->execute(['p' => $idProducto]);
-        $datos = $stmt->fetch();
-
-        if ($datos['total'] == 0) {
-            return "Sin valorar";
-        }
-
-        $total = $datos['total'];
-        $media = round($datos['media'], 2);
-        $entera = floor($media);
-        $decimal = $media - $entera;
-
-        $html = "$total Valoraciones. ";
-
-        for ($i = 1; $i <= 5; $i++) {
-            if ($i <= $entera) {
-                $html .= '<i class="fas fa-star"></i>'; // Estrella llena
-            } elseif ($i == $entera + 1 && $decimal >= 0.5) {
-                $html .= '<i class="fas fa-star-half-alt"></i>'; // Media estrella 
+        foreach ($resultado as $key => $value) {
+            $id = $value['id'];
+            $mediaVotos = $value['mediaVotos']; // Media aritmética [cite: 17]
+            $numVotos = $value['numVotos']; // Cantidad de clientes [cite: 19]
+            $innerHTML = '';
+            
+            if($numVotos == 0){
+                $innerHTML = 'Sin valoración';
             } else {
-                $html .= '<i class="far fa-star"></i>'; // Estrella vacía
+                $innerHTML .= '<p>' . $numVotos . ' valoraciones: ';
+                
+                // Lógica para pintar estrellas con Font Awesome 
+                $parteEntera = floor($mediaVotos);
+                for ($i=0; $i < $parteEntera; $i++) { 
+                    $innerHTML .= '<i class="fas fa-star"></i>';
+                }
+                
+                // Si la parte decimal es >= 0.5, pintamos media estrella 
+                $decimal = $mediaVotos - $parteEntera;
+                if($decimal >= 0.5){
+                    $innerHTML .= '<i class="fas fa-star-half-alt"></i>'; 
+                }
+
+                $innerHTML .= '</p>';
             }
+            
+            // Asignamos el HTML al elemento correspondiente sin recargar [cite: 9]
+            $resp->assign("votos_" . $id, "innerHTML", $innerHTML);
         }
-        return $html;
+
+        return $resp;
     }
 }
