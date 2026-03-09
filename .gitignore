@@ -1,0 +1,15 @@
+# Ignorar carpetas vendor en cualquier profundidad (Tarea 8, Tarea 7, etc.)
+**/vendor/
+
+# Ignorar archivos de configuración de VS Code
+.vscode/
+
+# Ignorar las credenciales de Google (¡Importante por seguridad!)
+**/credentials.json
+
+# Archivos de sistema
+Thumbs.db
+.DS_Store
+
+# Si usas algún entorno virtual o caché de PHP
+.phpunit.result.cache
